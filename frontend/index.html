@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Classifier</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🌸 Flower Recognition</h1>
+        <p>Upload a flower image to classify it.</p>
+        
+        <div class="uploader">
+            <input type="file" id="imageUpload" accept="image/jpeg, image/png">
+            <label for="imageUpload">Choose an Image</label>
+        </div>
+
+        <button id="predictButton">Classify</button>
+        
+        <div id="result">
+            <img id="preview" src="#" alt="Image preview" />
+            <h2 id="predictionText"></h2>
+        </div>
+        <div id="loader" class="hidden"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

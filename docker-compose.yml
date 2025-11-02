@@ -1,0 +1,59 @@
+services:
+  # The PostgreSQL Database
+  db:
+    image: postgres:14-alpine
+    container_name: flower_db
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=flower_db
+    ports:
+      - "5432:5432" # Lets you connect from your PC
+    volumes:
+      - db_data:/var/lib/postgresql/data # Persists the DB
+
+  # The One-Time Data Loader
+  data_loader:
+    container_name: flower_data_loader
+    build: ./loader # Tells it to build from the 'loader' folder
+    depends_on:
+      - db # Won't start until 'db' is ready
+    volumes:
+      - ./Flower-Dataset:/app/Flower-Dataset:ro # Mounts your dataset (read-only)
+      - image_storage:/app/images # Writes images to the shared volume
+
+  # The One-Time Model Trainer
+  trainer:
+    container_name: flower_trainer
+    build: ./trainer
+    depends_on:
+      - db
+    volumes:
+      - model_storage:/app/models # Writes model here
+      - image_storage:/app/images:ro # Reads images from here (read-only)
+
+  # The API Server
+  api:
+    container_name: flower_api
+    build: ./api
+    ports:
+      - "8000:8000" # Your API (http://localhost:8000)
+    volumes:
+      - model_storage:/app/models:ro # Reads model from here (read-only)
+    depends_on:
+      - db
+
+  # The Frontend Web Server
+  frontend:
+    container_name: flower_frontend
+    build: ./frontend
+    ports:
+      - "80:80" # Your website (http://localhost)
+    depends_on:
+      - api # Won't start until 'api' is ready
+
+# Define the shared "drives"
+volumes:
+  db_data:
+  model_storage:
+  image_storage:
